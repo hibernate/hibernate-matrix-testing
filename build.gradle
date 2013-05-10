@@ -1,39 +1,33 @@
-/*
- * Hibernate, Relational Persistence for Idiomatic Java
- *
- * Copyright (c) 2011, Red Hat Inc. or third-party contributors as
- * indicated by the @author tags or express copyright attribution
- * statements applied by the authors.  All third-party contributions are
- * distributed under license by Red Hat Inc.
- *
- * This copyrighted material is made available to anyone wishing to use, modify,
- * copy, or redistribute it subject to the terms and conditions of the GNU
- * Lesser General Public License, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
- * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
- * for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this distribution; if not, write to:
- * Free Software Foundation, Inc.
- * 51 Franklin Street, Fifth Floor
- * Boston, MA  02110-1301  USA
- */
+buildscript {
+    repositories {
+        mavenCentral()
+        mavenLocal()
 
-apply plugin: 'groovy'
-apply plugin: 'idea'
-
-buildDir = "target"
+        mavenRepo name: 'jboss-nexus', url: "http://repository.jboss.org/nexus/content/groups/public/"
+        mavenRepo name: "jboss-snapshots", url: "http://snapshots.jboss.org/maven2/"
+    }
+    dependencies {
+        classpath 'org.hibernate.build.gradle:gradle-maven-publish-auth:2.0.1'
+    }
+}
 
 repositories {
     mavenCentral()
     mavenLocal()
     mavenRepo name: "jboss", url: "http://repository.jboss.org/nexus/content/groups/public/"
 }
-targetCompatibility = "1.6"
-sourceCompatibility = "1.6"
+
+apply plugin: 'groovy'
+apply plugin: 'maven-publish'
+apply plugin: 'maven-publish-auth'
+
+apply plugin: 'idea'
+apply plugin: 'eclipse'
+
+group = 'org.hibernate.build.gradle'
+version = '1.0.0-SNAPSHOT'
+
+buildDir = "target"
 
 dependencies {
     compile gradleApi()
@@ -64,22 +58,17 @@ publishing {
                 // append additional metadata
                 asNode().children().last() + {
                     resolveStrategy = Closure.DELEGATE_FIRST
-
-                    name subProject.pomName()
-                    description subProject.pomDescription()
+                    name 'Matrix Testing Plugin for Gradle'
+                    description 'Gradle plugin for dynamic generation of Test tasks across a set of database profiles'
                     url 'http://hibernate.org'
                     organization {
                         name 'Hibernate.org'
                         url 'http://hibernate.org'
                     }
-                    issueManagement {
-                        system 'jira'
-                        url 'https://hibernate.atlassian.net/browse/HHH'
-                    }
                     scm {
-                        url 'http://github.com/hibernate/hibernate-orm'
-                        connection 'scm:git:http://github.com/hibernate/hibernate-orm.git'
-                        developerConnection 'scm:git:git@github.com:hibernate/hibernate-orm.git'
+                        url 'http://github.com/hibernate/hibernate-matrix-testing'
+                        connection 'scm:git:http://github.com/hibernate/hibernate-matrix-testing.git'
+                        developerConnection 'scm:git:git@github.com:hibernate/hibernate-matrix-testing.git'
                     }
                     licenses {
                         license {
@@ -110,7 +99,7 @@ publishing {
 
     repositories {
         maven {
-            if ( subProject.version.endsWith( 'SNAPSHOT' ) ) {
+            if ( version.endsWith( 'SNAPSHOT' ) ) {
                 name 'jboss-snapshots-repository'
                 url 'https://repository.jboss.org/nexus/content/repositories/snapshots'
             }
@@ -126,4 +115,12 @@ publishing {
     }
 }
 
+task sourcesJar(type: Jar, dependsOn: compileJava) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
 
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.6'
+}
