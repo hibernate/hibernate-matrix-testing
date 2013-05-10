@@ -1,0 +1,129 @@
+/*
+ * Hibernate, Relational Persistence for Idiomatic Java
+ *
+ * Copyright (c) 2011, Red Hat Inc. or third-party contributors as
+ * indicated by the @author tags or express copyright attribution
+ * statements applied by the authors.  All third-party contributions are
+ * distributed under license by Red Hat Inc.
+ *
+ * This copyrighted material is made available to anyone wishing to use, modify,
+ * copy, or redistribute it subject to the terms and conditions of the GNU
+ * Lesser General Public License, as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this distribution; if not, write to:
+ * Free Software Foundation, Inc.
+ * 51 Franklin Street, Fifth Floor
+ * Boston, MA  02110-1301  USA
+ */
+
+apply plugin: 'groovy'
+apply plugin: 'idea'
+
+buildDir = "target"
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+    mavenRepo name: "jboss", url: "http://repository.jboss.org/nexus/content/groups/public/"
+}
+targetCompatibility = "1.6"
+sourceCompatibility = "1.6"
+
+dependencies {
+    compile gradleApi()
+    compile localGroovy()
+    compile 'org.apache.ant:ant:1.8.2'
+}
+
+idea {
+	project {
+		languageLevel = '1.6'
+	}
+	module {
+		downloadSources = true
+		downloadJavadoc = true
+	}
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+
+            artifact sourcesJar {
+                classifier "sources"
+            }
+
+            pom.withXml {
+                // append additional metadata
+                asNode().children().last() + {
+                    resolveStrategy = Closure.DELEGATE_FIRST
+
+                    name subProject.pomName()
+                    description subProject.pomDescription()
+                    url 'http://hibernate.org'
+                    organization {
+                        name 'Hibernate.org'
+                        url 'http://hibernate.org'
+                    }
+                    issueManagement {
+                        system 'jira'
+                        url 'https://hibernate.atlassian.net/browse/HHH'
+                    }
+                    scm {
+                        url 'http://github.com/hibernate/hibernate-orm'
+                        connection 'scm:git:http://github.com/hibernate/hibernate-orm.git'
+                        developerConnection 'scm:git:git@github.com:hibernate/hibernate-orm.git'
+                    }
+                    licenses {
+                        license {
+                            name 'GNU Lesser General Public License'
+                            url 'http://www.gnu.org/licenses/lgpl-2.1.html'
+                            comments 'See discussion at http://hibernate.org/license for more details.'
+                            distribution 'repo'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id 'hibernate-team'
+                            name 'The Hibernate Development Team'
+                            organization 'Hibernate.org'
+                            organizationUrl 'http://hibernate.org'
+                        }
+                    }
+                }
+
+                // TEMPORARY : currently Gradle Publishing feature is exporting dependencies as 'runtime' scope,
+                //      rather than 'compile'; fix that.
+                asNode().dependencies[0].dependency.each {
+                    it.scope[0].value = 'compile'
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            if ( subProject.version.endsWith( 'SNAPSHOT' ) ) {
+                name 'jboss-snapshots-repository'
+                url 'https://repository.jboss.org/nexus/content/repositories/snapshots'
+            }
+            else {
+                name 'jboss-releases-repository'
+                url 'https://repository.jboss.org/nexus/service/local/staging/deploy/maven2/'
+            }
+        }
+    }
+
+    generatePomFileForMavenJavaPublication {
+        destination = file("$buildDir/generated-pom.xml")
+    }
+}
+
+
