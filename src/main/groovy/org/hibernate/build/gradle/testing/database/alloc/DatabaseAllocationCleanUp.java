@@ -21,19 +21,31 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.hibernate.build.qalab;
+package org.hibernate.build.gradle.testing.database.alloc;
 
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.gradle.BuildAdapter;
+import org.gradle.BuildResult;
 
 /**
- * Represents a database instances allocated in the JBoss/Red Hat Qe Lab via {@link DatabaseAllocator}
- * 
- * @author mvecera
- * @author Strong Liu
+ * A Gradle {@link org.gradle.BuildListener} used to release all databases allocated when the build is finished.
+ *
  * @author Steve Ebersole
  */
-public interface DatabaseAllocation {
-	public Map<String,String> getProperties();
+public class DatabaseAllocationCleanUp extends BuildAdapter {
+	private Set<DatabaseAllocation> databaseAllocations = new HashSet<DatabaseAllocation>();
 
-	public void release();
+	public void addDatabaseAllocation(DatabaseAllocation databaseAllocation) {
+		databaseAllocations.add( databaseAllocation );
+	}
+
+	@Override
+	public void buildFinished(BuildResult result) {
+		super.buildFinished( result );
+		for ( DatabaseAllocation databaseAllocation : databaseAllocations ) {
+			databaseAllocation.release();
+		}
+	}
 }

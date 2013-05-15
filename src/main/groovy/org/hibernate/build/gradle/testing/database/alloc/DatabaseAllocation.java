@@ -21,27 +21,19 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.hibernate.build.qalab
+package org.hibernate.build.gradle.testing.database.alloc;
 
-import org.hibernate.build.gradle.testing.database.DatabaseProfile
+import org.gradle.api.tasks.testing.Test;
 
 /**
+ * Represents a database instances allocated in the JBoss/Red Hat Qe Lab via {@link DatabaseAllocator}
+ * 
+ * @author mvecera
+ * @author Strong Liu
  * @author Steve Ebersole
  */
-class DisabledDatabaseAllocation implements DatabaseAllocation {
-    private final DatabaseProfile databaseProfile;
+public interface DatabaseAllocation {
+	public void prepareForExecution(Test testTask);
 
-    DisabledDatabaseAllocation(DatabaseProfile databaseProfile) {
-        this.databaseProfile = databaseProfile;
-    }
-
-    @Override
-    Map<String, String> getProperties() {
-        return databaseProfile.hibernateProperties;
-    }
-
-    @Override
-    void release() {
-        // nothing to do
-    }
+	public void release();
 }

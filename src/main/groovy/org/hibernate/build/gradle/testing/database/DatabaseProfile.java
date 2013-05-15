@@ -28,18 +28,37 @@ import java.util.Map;
 
 import org.gradle.api.artifacts.Configuration;
 
-import org.hibernate.build.qalab.DatabaseAllocation;
-
 /**
- * Contract for database "profiles".
+ * Contract for database "profiles".  See Readme.md for details.
  *
  * @author Steve Ebersole
  * @author Strong Liu
  */
 public interface DatabaseProfile {
+	/**
+	 * Read access to the name of the profile
+	 *
+	 * @return The profile name
+	 */
 	public String getName();
+
+	/**
+	 * The base directory for the profile definition
+	 *
+	 * @return The profile directory for this profile.
+	 */
 	public File getDirectory();
+
+	/**
+	 * Read access to the Hibernate properties contributed by the definition of this profile.
+	 *
+	 * @return The contributed Hibernate properties
+	 */
 	public Map<String,String> getHibernateProperties();
+
+	/**
+	 * Read access to the runtime configuration additions contributed by the definition
+	 * @return
+	 */
 	public Configuration getTestingRuntimeConfiguration();
-	public DatabaseAllocation getDatabaseAllocation();
 }

@@ -34,7 +34,10 @@ import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.testing.Test
 import org.hibernate.build.gradle.testing.database.DatabaseProfile
 import org.hibernate.build.gradle.testing.database.DatabaseProfilePlugin
+import org.hibernate.build.gradle.testing.database.alloc.DatabaseAllocation
 import org.hibernate.build.gradle.util.Jdk
+import org.hibernate.build.gradle.testing.database.alloc.DatabaseAllocator
+
 import static org.gradle.api.plugins.JavaPlugin.COMPILE_CONFIGURATION_NAME
 import static org.gradle.api.plugins.JavaPlugin.RUNTIME_CONFIGURATION_NAME
 import static org.gradle.api.plugins.JavaPlugin.TEST_COMPILE_CONFIGURATION_NAME
@@ -137,7 +140,7 @@ public class MatrixTestingPlugin implements Plugin<Project> {
         // but again this is just a start.
     }
 
-    private Task prepareNodeTask(MatrixNode node) {
+    private Task prepareNodeTask(final MatrixNode node) {
         String taskName = MATRIX_TASK_NAME + '_' + node.name
         log.debug( "Adding Matrix Testing task $taskName" );
         final Test nodeTask = project.tasks.create( taskName, Test );
@@ -150,10 +153,16 @@ public class MatrixTestingPlugin implements Plugin<Project> {
         nodeTask.testResultsDir = new File(node.baseOutputDirectory, "results")
 
         nodeTask.dependsOn( project.tasks.getByName( testSourceSet.classesTaskName ) );
-        nodeTask.systemProperties = node.databaseAllocation.properties
         nodeTask.systemProperties['hibernate.test.validatefailureexpected'] = true
+//        nodeTask.jvmArgs = ['-Xms1024M', '-Xmx1024M', '-XX:MaxPermSize=512M', '-Xss4096k', '-Xverify:none', '-XX:+UseFastAccessorMethods', '-XX:+DisableExplicitGC']
         nodeTask.jvmArgs = ['-Xms1024M', '-Xmx1024M']//, '-XX:MaxPermSize=512M', '-Xss4096k', '-Xverify:none', '-XX:+UseFastAccessorMethods', '-XX:+DisableExplicitGC']
         nodeTask.maxHeapSize = "1024M"
+
+        nodeTask.doFirst {
+            final DatabaseAllocation databaseAllocation = DatabaseAllocator.locate( project ).getAllocation( node.databaseProfile );
+            databaseAllocation.prepareForExecution( nodeTask )
+        }
+
         return nodeTask;
     }
 }

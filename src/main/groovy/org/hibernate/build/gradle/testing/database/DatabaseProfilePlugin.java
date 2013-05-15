@@ -72,11 +72,8 @@ public class DatabaseProfilePlugin implements Plugin<Project> {
 		processCustomProfiles( profileMap );
 		this.profiles = new ArrayList<DatabaseProfile>();
 
-		DatabaseAllocationCleanUp listener = new DatabaseAllocationCleanUp();
-		project.getGradle().addBuildListener( listener );
 		for ( DatabaseProfile profile : profileMap.values() ) {
 			this.profiles.add( profile );
-			listener.addDatabaseAllocation( profile.getDatabaseAllocation() );
 		}
     }
 

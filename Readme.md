@@ -90,7 +90,7 @@ named _hibernate-matrix-dballcoation_ which accepts either
 
 *   a comma-separate list of profile names
 *   the magic value **all** which indicates to allocate for all **supported** databases (see
-    org.hibernate.build.qalab.DatabaseAllocator.SUPPORTED_DB_NAMES for details)
+    org.hibernate.build.gradle.testing.database.alloc.DatabaseAllocator.SUPPORTED_DB_NAMES for details)
 
 For example, if you want to run matrix test on PostgreSQL 8.4, knowing that the database name for that is
 _postgresql84_, you can use this command:

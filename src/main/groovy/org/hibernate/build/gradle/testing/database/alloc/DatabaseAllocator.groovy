@@ -21,7 +21,7 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.hibernate.build.qalab
+package org.hibernate.build.gradle.testing.database.alloc
 
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
@@ -29,6 +29,10 @@ import org.gradle.api.logging.Logging
 import org.hibernate.build.gradle.testing.database.DatabaseProfile
 
 /**
+ * Delegate for managing dynamic database instance allocation as part of the testing lifecycle.
+ *
+ *
+ *
  * Helper for dealing with the "DB Allocator" service set up in the JBoss/Red Hat QE lab.
  *
  * Use the <code>hibernate-matrix-dballocation</code> setting to control db allocation.  By default,
@@ -44,26 +48,48 @@ import org.hibernate.build.gradle.testing.database.DatabaseProfile
 class DatabaseAllocator {
     private static final Logger log = Logging.getLogger( DatabaseAllocator.class );
 
-	public static final String ALLOCATION_ENABLED = "hibernate-matrix-dballocation";
-    public static final String REQUESTEE = "hibernate-matrix-dballocation-requestee";
+    public static final String DB_ALLOCATOR_KEY = "dbAllocator";
 
-	public static final String DB_ALLOCATOR_KEY = "dbAllocator";
+    private final Project rootProject;
 
-    public static def SUPPORTED_DB_NAMES = [
-            "oracle9i", "oracle10g", "oracle11gR1", "oracle11gR2", "oracle11gR2RAC", "oracle11gR1RAC",
-            "postgresql82", "postgresql83", "postgresql84", "postgresql91", "postgresql92",
-	    "postgresplus92",
-            "mysql50", "mysql51","mysql55",
-            "db2-91", "db2-97", "db2-10",
-            "mssql2005", "mssql2008R1", "mssql2008R2", "mssql2012",
-            "sybase155", "sybase157"
-    ];
+    private final DatabaseAllocationCleanUp cleanUpListener;
+    private List<DatabaseAllocationProvider> providers;
+    private Map<String,DatabaseAllocation> databaseAllocationMap = new HashMap<String, DatabaseAllocation>();
 
-	private Map<String,DatabaseAllocation> databaseAllocationMap = new HashMap<String, DatabaseAllocation>();
-	private final Project rootProject;
 
-    DatabaseAllocator(Project rootProject) {
+    /**
+     * Get the allocator delegate for this project
+     *
+     * @param project The project
+     *
+     * @return The allocator delegate
+     */
+    public static DatabaseAllocator locate(Project project) {
+        if ( ! project.rootProject.hasProperty( DB_ALLOCATOR_KEY ) ) {
+            project.rootProject.ext.setProperty( DB_ALLOCATOR_KEY, new DatabaseAllocator( project.rootProject ) );
+        }
+        return (DatabaseAllocator) project.rootProject.properties[ DB_ALLOCATOR_KEY ];
+    }
+
+    private DatabaseAllocator(Project rootProject) {
         this.rootProject = rootProject
+
+        cleanUpListener = new DatabaseAllocationCleanUp();
+        project.getGradle().addBuildListener( listener );
+    }
+
+    @SuppressWarnings("GroovyUnusedDeclaration")
+    public void registerProvider(DatabaseAllocationProvider provider) {
+        if ( provider == null ) {
+            return;
+        }
+
+        log.lifecycle( "Registering DatabaseAllocationProvider : ${provider}" )
+
+        if ( providers == null ) {
+            providers = new ArrayList<>();
+        }
+        providers += provider;
     }
 
     public DatabaseAllocation getAllocation(DatabaseProfile profile) {
@@ -76,26 +102,12 @@ class DatabaseAllocator {
 	}
 
 	private DatabaseAllocation createAllocation(DatabaseProfile profile) {
-        if ( isAllocationEnabled( profile.name ) ) {
-            log.lifecycle( "using Allocator to get database [${profile.name}] connection info" );
-			final File outputDirectory = new File( new File( rootProject.getBuildDir(), "matrix" ), profile.getName() )
-            return new EnabledDatabaseAllocation( rootProject.getAnt(), profile, outputDirectory );
+        for ( DatabaseAllocationProvider provider : providers ) {
+            final DatabaseAllocation allocation = provider.buildAllocation( rootProject, profile, cleanUpListener )
+            if ( allocation != null ) {
+                return allocation;
+            }
         }
-		return new DisabledDatabaseAllocation( profile );
-	}
-
-    private boolean isAllocationEnabled(String name) {
-        if ( !SUPPORTED_DB_NAMES.contains(name) ) {
-            return false
-        };
-        String value = System.properties[ALLOCATION_ENABLED]
-        return value != null && (value.contains(name) || value.equals("all"));
-    }
-
-	public static DatabaseAllocator locate(Project project) {
-		if ( ! project.rootProject.hasProperty( DB_ALLOCATOR_KEY ) ) {
-			project.rootProject.ext.setProperty( DB_ALLOCATOR_KEY, new DatabaseAllocator( project.rootProject ) );
-		}
-		return (DatabaseAllocator) project.rootProject.properties[ DB_ALLOCATOR_KEY ];
+        return new NoAllocation();
 	}
 }
