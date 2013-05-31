@@ -75,7 +75,7 @@ class DatabaseAllocator {
         this.rootProject = rootProject
 
         cleanUpListener = new DatabaseAllocationCleanUp();
-        project.getGradle().addBuildListener( listener );
+        rootProject.getGradle().addBuildListener( cleanUpListener );
     }
 
     @SuppressWarnings("GroovyUnusedDeclaration")
