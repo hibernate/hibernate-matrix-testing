@@ -38,7 +38,13 @@ public class JdbcDirectoryProfile extends AbstractDatabaseProfileImpl {
     public JdbcDirectoryProfile(File jdbcDirectory, Project project) {
         super( jdbcDirectory.getParentFile(), project );
         jdbcDependencies = prepareConfiguration( getName() );
-        project.dependencies.add(getName(), project.files(jdbcDirectory.listFiles()))
+        project.dependencies.add(getName(), project.files(jdbcDirectory.listFiles()));
+    }
+
+    public JdbcDirectoryProfile(File jdbcDirectory, File resourcesDirectory, Project project) {
+        super( jdbcDirectory.getParentFile(), project );
+        jdbcDependencies = prepareConfiguration( getName() );
+        project.dependencies.add(getName(), project.files(jdbcDirectory.listFiles(), resourcesDirectory.listFiles()));
     }
 
     @Override
