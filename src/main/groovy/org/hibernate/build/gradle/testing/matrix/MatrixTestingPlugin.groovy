@@ -49,6 +49,7 @@ import static org.gradle.api.plugins.JavaPlugin.TEST_RUNTIME_CONFIGURATION_NAME
  *
  * @author Steve Ebersole
  * @author Strong Liu
+ * @author Brett Meyer
  */
 public class MatrixTestingPlugin implements Plugin<Project> {
     private static final Logger log = Logging.getLogger(MatrixTestingPlugin.class);
@@ -159,8 +160,20 @@ public class MatrixTestingPlugin implements Plugin<Project> {
         nodeTask.maxHeapSize = "1024M"
 
         nodeTask.doFirst {
-            final DatabaseAllocation databaseAllocation = DatabaseAllocator.locate( project ).getAllocation( node.databaseProfile );
-            databaseAllocation.prepareForExecution( nodeTask )
+            DatabaseAllocator.locate( project ).getAllocation( node.databaseProfile ).prepareForExecution( nodeTask )
+        }
+        
+        // After each test *class* (not method), call afterTestClass.  For most/all DatabaseAllocations, this should
+        // erase the entire database.
+        String testClassName = "";
+        nodeTask.afterTest { testDescriptor, testResult ->
+        	// Unfortunately, have to do it this way.  Our only options are afterTest (after each method) and
+        	// afterTestSuite.
+        	if ( !testDescriptor.className.equals( testClassName ) ) {
+        		testClassName = testDescriptor.className;
+        		DatabaseAllocator.locate( project ).getAllocation( node.databaseProfile ).afterTestClass();
+        	}
+        	println "Executing test ${testDescriptor.name} [${testDescriptor.className}] with result: ${testResult.resultType}";
         }
 
         return nodeTask;
