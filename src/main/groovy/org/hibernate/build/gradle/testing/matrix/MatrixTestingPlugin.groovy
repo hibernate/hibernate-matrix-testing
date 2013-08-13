@@ -173,7 +173,6 @@ public class MatrixTestingPlugin implements Plugin<Project> {
         		testClassName = testDescriptor.className;
         		DatabaseAllocator.locate( project ).getAllocation( node.databaseProfile ).afterTestClass();
         	}
-        	println "Executing test ${testDescriptor.name} [${testDescriptor.className}] with result: ${testResult.resultType}";
         }
 
         return nodeTask;
