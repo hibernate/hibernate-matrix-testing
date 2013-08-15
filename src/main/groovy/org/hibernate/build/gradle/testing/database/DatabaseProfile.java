@@ -54,7 +54,7 @@ public interface DatabaseProfile {
 	 *
 	 * @return The contributed Hibernate properties
 	 */
-	public Map<String,String> getHibernateProperties();
+	public Map<String,Object> getHibernateProperties();
 
 	/**
 	 * Read access to the runtime configuration additions contributed by the definition

@@ -47,7 +47,7 @@ public abstract class AbstractDatabaseProfileImpl implements DatabaseProfile {
     private final String name;
 	private final File profileDirectory;
 	private final Project project;
-	private final Map<String,String> hibernateProperties;
+	private final Map<String,Object> hibernateProperties;
 
 	@SuppressWarnings( {"unchecked"})
 	protected AbstractDatabaseProfileImpl(File profileDirectory, Project project) {
@@ -55,7 +55,7 @@ public abstract class AbstractDatabaseProfileImpl implements DatabaseProfile {
 		this.name = profileDirectory.getName();
 		this.project = project;
 
-		this.hibernateProperties = new HashMap<String, String>();
+		this.hibernateProperties = new HashMap<String, Object>();
 		final File hibernatePropertiesFile = new File(
 				new File( profileDirectory, "resources" ),
 				"hibernate.properties"
@@ -95,7 +95,7 @@ public abstract class AbstractDatabaseProfileImpl implements DatabaseProfile {
 	}
 
 	@Override
-	public Map<String, String> getHibernateProperties() {
+	public Map<String, Object> getHibernateProperties() {
 		return hibernateProperties;
 	}
 

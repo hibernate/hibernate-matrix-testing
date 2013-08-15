@@ -24,8 +24,8 @@
 package org.hibernate.build.gradle.testing.database;
 
 
-import org.gradle.api.Project;
-import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.Project
+import org.gradle.api.artifacts.Configuration
 /**
  * Database profile as defined by a directory named {@code jdbc} containing JDBC drivers.
  *
@@ -39,12 +39,6 @@ public class JdbcDirectoryProfile extends AbstractDatabaseProfileImpl {
         super( jdbcDirectory.getParentFile(), project );
         jdbcDependencies = prepareConfiguration( getName() );
         project.dependencies.add(getName(), project.files(jdbcDirectory.listFiles()));
-    }
-
-    public JdbcDirectoryProfile(File jdbcDirectory, File resourcesDirectory, Project project) {
-        super( jdbcDirectory.getParentFile(), project );
-        jdbcDependencies = prepareConfiguration( getName() );
-        project.dependencies.add(getName(), project.files(jdbcDirectory.listFiles(), resourcesDirectory.listFiles()));
     }
 
     @Override

@@ -57,6 +57,7 @@ public class MatrixTestingPlugin implements Plugin<Project> {
     public static final String MATRIX_COMPILE_CONFIG_NAME = "matrixCompile";
     public static final String MATRIX_RUNTIME_CONFIG_NAME = "matrixRuntime";
     public static final String MATRIX_TASK_NAME = "matrix";
+    public static final String PROJECT_TEST_TASK_NAME = "test";
 
     private Project project;
     private SourceSet testSourceSet;
@@ -154,7 +155,11 @@ public class MatrixTestingPlugin implements Plugin<Project> {
         nodeTask.testResultsDir = new File(node.baseOutputDirectory, "results")
 
         nodeTask.dependsOn( project.tasks.getByName( testSourceSet.classesTaskName ) );
-        nodeTask.systemProperties['hibernate.test.validatefailureexpected'] = true
+		
+		nodeTask.systemProperties.putAll(node.databaseProfile.hibernateProperties);
+		// allow the project's test task systemProperties (typically includes System.properties)
+		// to overwrite the databaseProfile's
+		nodeTask.systemProperties.putAll(project.tasks.getByName( PROJECT_TEST_TASK_NAME ).systemProperties);
 //        nodeTask.jvmArgs = ['-Xms1024M', '-Xmx1024M', '-XX:MaxPermSize=512M', '-Xss4096k', '-Xverify:none', '-XX:+UseFastAccessorMethods', '-XX:+DisableExplicitGC']
         nodeTask.jvmArgs = ['-Xms1024M', '-Xmx1024M']//, '-XX:MaxPermSize=512M', '-Xss4096k', '-Xverify:none', '-XX:+UseFastAccessorMethods', '-XX:+DisableExplicitGC']
         nodeTask.maxHeapSize = "1024M"

@@ -58,7 +58,6 @@ public class DatabaseProfilePlugin implements Plugin<Project> {
 
 	private static final String MATRIX_BUILD_FILE = "matrix.gradle";
 	private static final String JDBC_DIR = "jdbc";
-	private static final String RESOURCES_DIR = "resources";
 
 	private static final Logger log = Logging.getLogger( DatabaseProfilePlugin.class );
 
@@ -104,14 +103,8 @@ public class DatabaseProfilePlugin implements Plugin<Project> {
 			databaseProfile = new MatrixDotGradleProfile( matrixDotGradleFile, project );
 		}
 		final File jdbcDirectory = new File( directory, JDBC_DIR );
-		final File resourcesDirectory = new File( directory, RESOURCES_DIR );
 		if ( jdbcDirectory.exists() && jdbcDirectory.isDirectory() ) {
-			if ( resourcesDirectory.exists() && resourcesDirectory.isDirectory() ) {
-				databaseProfile = new JdbcDirectoryProfile( jdbcDirectory, resourcesDirectory, project );
-			}
-			else {
-				databaseProfile = new JdbcDirectoryProfile( jdbcDirectory, project );
-			}
+			databaseProfile = new JdbcDirectoryProfile( jdbcDirectory, project );
 		}
 
 		if ( databaseProfile == null ) {
