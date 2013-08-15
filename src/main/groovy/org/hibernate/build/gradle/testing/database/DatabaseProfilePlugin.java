@@ -99,12 +99,16 @@ public class DatabaseProfilePlugin implements Plugin<Project> {
 		//		2) a directory named 'jdbc'
 		DatabaseProfile databaseProfile = null;
 		final File matrixDotGradleFile = new File( directory, MATRIX_BUILD_FILE );
+		final File resourcesDirectory = new File( directory, RESOURCES_DIR );
 		if ( matrixDotGradleFile.exists() && matrixDotGradleFile.isFile() ) {
 			log.debug( "Found matrix.gradle file : " + matrixDotGradleFile );
-			databaseProfile = new MatrixDotGradleProfile( matrixDotGradleFile, project );
+			if ( resourcesDirectory.exists() && resourcesDirectory.isDirectory() ) {
+				databaseProfile = new MatrixDotGradleProfile( matrixDotGradleFile,resourcesDirectory, project );
+			} else {
+				databaseProfile = new MatrixDotGradleProfile( matrixDotGradleFile, project );
+			}
 		}
 		final File jdbcDirectory = new File( directory, JDBC_DIR );
-		final File resourcesDirectory = new File( directory, RESOURCES_DIR );
 		if ( jdbcDirectory.exists() && jdbcDirectory.isDirectory() ) {
 			if ( resourcesDirectory.exists() && resourcesDirectory.isDirectory() ) {
 				databaseProfile = new JdbcDirectoryProfile( jdbcDirectory, resourcesDirectory, project );

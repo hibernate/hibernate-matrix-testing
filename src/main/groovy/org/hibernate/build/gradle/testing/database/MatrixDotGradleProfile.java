@@ -54,6 +54,11 @@ public class MatrixDotGradleProfile extends AbstractDatabaseProfileImpl {
         }
 	}
 
+	public MatrixDotGradleProfile(File matrixDotGradleFile, File resourcesDirectory, Project project) {
+		this( matrixDotGradleFile, project );
+		project.getDependencies().add(getName(), project.files(resourcesDirectory));
+	}
+
 	@Override
 	public Configuration getTestingRuntimeConfiguration() {
 		return jdbcDependencies;
