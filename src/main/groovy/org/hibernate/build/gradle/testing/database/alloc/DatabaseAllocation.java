@@ -37,11 +37,11 @@ public interface DatabaseAllocation {
 	public void prepareForExecution(Test testTask);
 	
 	/**
-	 * Allos the allocation to script tasks to be completed after each test class (not method).  For instance,
-	 * the JBoss/RH QA Lab allocation forcefully erases the DB after ever test class to ensure a clean slate.  We don't
-	 * always do a great job of ensuring the test cases clean up after themselves.
+	 * Allows the allocation to script tasks to be completed before each test class (not method).  For instance,
+	 * the JBoss/RH QA Lab allocation forcefully erases the database to ensure a clean slate.
+	 * We don't always do a great job of ensuring the test cases clean up after themselves.
 	 */
-	public void afterTestClass();
+	public void beforeTestClass();
 
 	public void release();
 }

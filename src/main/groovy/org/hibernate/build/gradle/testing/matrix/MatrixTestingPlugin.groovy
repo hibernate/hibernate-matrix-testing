@@ -171,12 +171,12 @@ public class MatrixTestingPlugin implements Plugin<Project> {
         // After each test *class* (not method), call afterTestClass.  For most/all DatabaseAllocations, this should
         // erase the entire database.
         String testClassName = "";
-        nodeTask.afterTest { testDescriptor, testResult ->
+        nodeTask.beforeTest { testDescriptor ->
         	// Unfortunately, have to do it this way.  Our only options are afterTest (after each method) and
         	// afterTestSuite.
         	if ( !testDescriptor.className.equals( testClassName ) ) {
-        		testClassName = testDescriptor.className;
-        		DatabaseAllocator.locate( project ).getAllocation( node.databaseProfile ).afterTestClass();
+				testClassName = testDescriptor.className;
+        		DatabaseAllocator.locate( project ).getAllocation( node.databaseProfile ).beforeTestClass();
         	}
         }
 

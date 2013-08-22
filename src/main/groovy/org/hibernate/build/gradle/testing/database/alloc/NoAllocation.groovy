@@ -14,7 +14,7 @@ class NoAllocation implements DatabaseAllocation {
     }
 
     @Override
-    void afterTestClass() {
+    void beforeTestClass() {
         // nothing to do
     }
 
