@@ -48,9 +48,10 @@ public class Jdk {
 
 	private final File jdkHome;
 	private final JavaVersion version;
-    public Jdk(){
-        this(System.getenv( "JAVA_HOME" ));
-    }
+
+	public Jdk(){
+		this( getJavaHome() );
+	}
 
 	public Jdk(File jdkHome) {
 		this.jdkHome = jdkHome;
@@ -62,6 +63,16 @@ public class Jdk {
 
 	public Jdk(String jdkHomePath) {
 		this( new File( jdkHomePath ) );
+	}
+
+	private static String getJavaHome() {
+		String javaHome = System.getenv( "JAVA_HOME" );
+
+		if ( javaHome == null ) {
+			throw new IllegalArgumentException( "Environment variable JAVA_HOME needs to be specified." );
+		}
+
+		return javaHome;
 	}
 
     public File getJavaExecutable() {
@@ -129,7 +140,7 @@ public class Jdk {
 
 		try {
 			final File javaCommand = getJavaExecutable();
-			
+
 			// Fix build for e.g. windows when path to java command contains spaces
 			// Using the array for Runtime.exec will make sure that arguments with spaces get quoted
 			Process javaProcess = Runtime.getRuntime().exec( new String[]{javaCommand.getAbsolutePath(), "-version"} );
@@ -149,7 +160,7 @@ public class Jdk {
 		}
 		return version;
 	}
-	
+
 	private String extractVersion(BufferedReader br) throws IOException{
 		final String key = "version \"";
 		String line = null;
