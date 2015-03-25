@@ -75,17 +75,17 @@ public class Jdk {
 		return javaHome;
 	}
 
-    public File getJavaExecutable() {
-        return new File( getJdkExecutable( "java" ) );
-    }
+	public File getJavaExecutable() {
+		return new File( getJdkExecutable( "java" ) );
+	}
 
 	public File getJavacExecutable() {
 		return new File( getJdkExecutable( "javac" ) );
 	}
 
-    public File getJavadocExecutable() {
-        return new File( getJdkExecutable( "javadoc" ) );
-    }
+	public File getJavadocExecutable() {
+		return new File( getJdkExecutable( "javadoc" ) );
+	}
 
 	public JavaVersion getVersion() {
 		return version;
