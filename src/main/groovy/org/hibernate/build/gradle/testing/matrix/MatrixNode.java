@@ -28,8 +28,6 @@ import java.io.File;
 import org.gradle.api.Project;
 
 import org.hibernate.build.gradle.testing.database.DatabaseProfile;
-import org.hibernate.build.gradle.util.Jdk;
-import org.hibernate.build.gradle.testing.database.alloc.DatabaseAllocation;
 
 /**
  * A testing matrix node combines a database profile and a jdk (eventually) along with managing "db allocation"
@@ -40,13 +38,11 @@ import org.hibernate.build.gradle.testing.database.alloc.DatabaseAllocation;
  */
 public class MatrixNode {
 	private final DatabaseProfile databaseProfile;
-	private final Jdk jdk;
 	private final File baseOutputDirectory;
 
 	@SuppressWarnings( {"ResultOfMethodCallIgnored"})
-	public MatrixNode(Project project, DatabaseProfile databaseProfile, Jdk jdk) {
+	public MatrixNode(Project project, DatabaseProfile databaseProfile) {
 		this.databaseProfile = databaseProfile;
-		this.jdk = jdk;
 
 		this.baseOutputDirectory = new File( new File( project.getBuildDir(), "matrix" ), databaseProfile.getName() );
 		baseOutputDirectory.mkdirs();
@@ -58,10 +54,6 @@ public class MatrixNode {
 
 	public DatabaseProfile getDatabaseProfile() {
 		return databaseProfile;
-	}
-
-    public Jdk getJdk() {
-		return jdk;
 	}
 
 	public File getBaseOutputDirectory() {

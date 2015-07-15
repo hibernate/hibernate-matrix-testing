@@ -34,8 +34,6 @@ import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.testing.Test
 import org.hibernate.build.gradle.testing.database.DatabaseProfile
 import org.hibernate.build.gradle.testing.database.DatabaseProfilePlugin
-import org.hibernate.build.gradle.testing.database.alloc.DatabaseAllocation
-import org.hibernate.build.gradle.util.Jdk
 import org.hibernate.build.gradle.testing.database.alloc.DatabaseAllocator
 
 import static org.gradle.api.plugins.JavaPlugin.COMPILE_CONFIGURATION_NAME
@@ -66,9 +64,6 @@ public class MatrixTestingPlugin implements Plugin<Project> {
     private Configuration matrixRuntimeConfig;
     private Task matrixTask;
 
-    // currently, only the build jdk is supported
-    private Jdk theJdk = new Jdk();
-
     public void apply(Project project) {
         this.project = project;
 
@@ -96,7 +91,7 @@ public class MatrixTestingPlugin implements Plugin<Project> {
 		Iterable<DatabaseProfile> profiles = project.rootProject.plugins[DatabaseProfilePlugin].databaseProfiles;
 		if ( profiles != null ) {
 			for ( DatabaseProfile profile : profiles ) {
-				matrixNodes.add( new MatrixNode( project, profile, theJdk ) );
+				matrixNodes.add( new MatrixNode( project, profile ) );
 			}
 		}
         return matrixNodes;
