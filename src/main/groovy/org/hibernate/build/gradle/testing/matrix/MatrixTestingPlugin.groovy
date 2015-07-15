@@ -146,8 +146,8 @@ public class MatrixTestingPlugin implements Plugin<Project> {
         nodeTask.testClassesDir = testSourceSet.output.classesDir
         nodeTask.ignoreFailures = true
         nodeTask.workingDir = node.baseOutputDirectory
-        nodeTask.testReportDir = new File(node.baseOutputDirectory, "reports")
-        nodeTask.testResultsDir = new File(node.baseOutputDirectory, "results")
+        nodeTask.reports.html.destination = new File(node.baseOutputDirectory, "reports")
+        nodeTask.reports.junitXml.destination = new File(node.baseOutputDirectory, "results")
 
         nodeTask.dependsOn( project.tasks.getByName( testSourceSet.classesTaskName ) );
 		
