@@ -32,8 +32,8 @@ import org.gradle.api.logging.Logging
 import org.gradle.api.plugins.JavaPluginConvention
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.testing.Test
+
 import org.hibernate.build.gradle.testing.database.DatabaseProfile
-import org.hibernate.build.gradle.testing.database.DatabaseProfilePlugin
 import org.hibernate.build.gradle.testing.database.alloc.DatabaseAllocator
 
 import static org.gradle.api.plugins.JavaPlugin.COMPILE_CONFIGURATION_NAME
