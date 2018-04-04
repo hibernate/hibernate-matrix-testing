@@ -1,14 +1,7 @@
 /*
  * Hibernate, Relational Persistence for Idiomatic Java
  *
- * License: GNU Lesser General Public License (LGPL), version 2.1 or later
- * See the lgpl.txt file in the root directory or http://www.gnu.org/licenses/lgpl-2.1.html
- */
-
-/*
- * Hibernate, Relational Persistence for Idiomatic Java
- *
- * Copyright (c) 2011, Red Hat Inc. or third-party contributors as
+ * Copyright (c) 2012, Red Hat Inc. or third-party contributors as
  * indicated by the @author tags or express copyright attribution
  * statements applied by the authors.  All third-party contributions are
  * distributed under license by Red Hat Inc.
@@ -28,20 +21,44 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
+package org.hibernate.build.gradle.testing.database;
 
-package org.hibernate.build.gradle.testing;
+import java.io.File;
+import java.util.Map;
+
+import org.gradle.api.artifacts.Configuration;
 
 /**
- * And exception intended to fail the build.
+ * Contract for database "profiles".  See Readme.md for details.
  *
  * @author Steve Ebersole
+ * @author Strong Liu
  */
-public class BuildException extends RuntimeException {
-	public BuildException(String message) {
-		super( message );
-	}
+public interface DatabaseProfile {
+	/**
+	 * Read access to the name of the profile
+	 *
+	 * @return The profile name
+	 */
+	public String getName();
 
-	public BuildException(String message, Throwable cause) {
-		super( message, cause );
-	}
+	/**
+	 * The base directory for the profile definition
+	 *
+	 * @return The profile directory for this profile.
+	 */
+	public File getDirectory();
+
+	/**
+	 * Read access to the Hibernate properties contributed by the definition of this profile.
+	 *
+	 * @return The contributed Hibernate properties
+	 */
+	public Map<String,Object> getHibernateProperties();
+
+	/**
+	 * Read access to the runtime configuration additions contributed by the definition
+	 * @return
+	 */
+	public Configuration getTestingRuntimeConfiguration();
 }

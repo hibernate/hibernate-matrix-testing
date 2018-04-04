@@ -1,20 +1,45 @@
-plugins {
-	id 'java-gradle-plugin'
-	id 'groovy'
-	id 'idea'
-	id 'eclipse'
+buildscript {
+    repositories {
+        mavenCentral()
+        mavenLocal()
+
+		maven {
+			name 'jboss-nexus'
+			url "http://repository.jboss.org/nexus/content/groups/public/"
+		}
+		maven {
+			name "jboss-snapshots"
+			url "http://snapshots.jboss.org/maven2/"
+		}
+    }
+    dependencies {
+        classpath 'org.hibernate.build.gradle:gradle-maven-publish-auth:2.0.1'
+    }
 }
 
 repositories {
     mavenCentral()
+    mavenLocal()
+
+		maven {
+			name 'jboss-nexus'
+			url "http://repository.jboss.org/nexus/content/groups/public/"
+		}
 		maven {
 			name "jboss-snapshots"
 			url "http://snapshots.jboss.org/maven2/"
 		}
 }
 
+apply plugin: 'groovy'
+apply plugin: 'maven-publish'
+apply plugin: 'maven-publish-auth'
+
+apply plugin: 'idea'
+apply plugin: 'eclipse'
+
 group = 'org.hibernate.build.gradle'
-version = '2.0.0-SNAPSHOT'
+version = '1.0.0-SNAPSHOT'
 
 buildDir = "target"
 
@@ -22,18 +47,6 @@ dependencies {
     compile gradleApi()
     compile localGroovy()
     compile 'org.apache.ant:ant:1.8.2'
-
-	ext {
-		junit5Version = '5.0.1'
-	}
-
-	// JUnit dependencies made up of:
-	// 		* JUnit 5
-	// 		* the Jupiter engine which runs JUnit 5 based tests
-	//		* the "vintage" engine - which runs JUnit 3 and 4 based tests
-	testCompile( "org.junit.jupiter:junit-jupiter-api:${dependencies.ext.junit5Version}" )
-	testCompile( "org.junit.jupiter:junit-jupiter-params:${dependencies.ext.junit5Version}" )
-	testRuntime( "org.junit.jupiter:junit-jupiter-engine:${dependencies.ext.junit5Version}" )
 }
 
 idea {
@@ -42,20 +55,81 @@ idea {
 	}
 	module {
 		downloadSources = true
+		downloadJavadoc = true
 	}
 }
 
-task compile
-tasks.compile.dependsOn tasks.compileJava, tasks.compileTestJava
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
 
-task copyResourcesToIntelliJOutFolder {
-	doLast {
-		copy {
-			from "$buildDir/resources/test"
-			into 'out/test/resources'
-		}
-	}
+            artifact sourcesJar {
+                classifier "sources"
+            }
+
+            pom.withXml {
+                // append additional metadata
+                asNode().children().last() + {
+                    resolveStrategy = Closure.DELEGATE_FIRST
+                    name 'Matrix Testing Plugin for Gradle'
+                    description 'Gradle plugin for dynamic generation of Test tasks across a set of database profiles'
+                    url 'http://hibernate.org'
+                    organization {
+                        name 'Hibernate.org'
+                        url 'http://hibernate.org'
+                    }
+                    scm {
+                        url 'http://github.com/hibernate/hibernate-matrix-testing'
+                        connection 'scm:git:http://github.com/hibernate/hibernate-matrix-testing.git'
+                        developerConnection 'scm:git:git@github.com:hibernate/hibernate-matrix-testing.git'
+                    }
+                    licenses {
+                        license {
+                            name 'GNU Lesser General Public License'
+                            url 'http://www.gnu.org/licenses/lgpl-2.1.html'
+                            comments 'See discussion at http://hibernate.org/license for more details.'
+                            distribution 'repo'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id 'hibernate-team'
+                            name 'The Hibernate Development Team'
+                            organization 'Hibernate.org'
+                            organizationUrl 'http://hibernate.org'
+                        }
+                    }
+                }
+
+                // TEMPORARY : currently Gradle Publishing feature is exporting dependencies as 'runtime' scope,
+                //      rather than 'compile'; fix that.
+                asNode().dependencies[0].dependency.each {
+                    it.scope[0].value = 'compile'
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            if ( version.endsWith( 'SNAPSHOT' ) ) {
+                name 'jboss-snapshots-repository'
+                url 'https://repository.jboss.org/nexus/content/repositories/snapshots'
+            }
+            else {
+                name 'jboss-releases-repository'
+                url 'https://repository.jboss.org/nexus/service/local/staging/deploy/maven2/'
+            }
+        }
+    }
 }
+
+task sourcesJar(type: Jar, dependsOn: compileJava) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
 
 task wrapper(type: Wrapper) {
     gradleVersion = '4.6'

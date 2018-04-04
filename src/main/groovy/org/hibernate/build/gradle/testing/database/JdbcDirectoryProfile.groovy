@@ -1,13 +1,6 @@
 /*
  * Hibernate, Relational Persistence for Idiomatic Java
  *
- * License: GNU Lesser General Public License (LGPL), version 2.1 or later
- * See the lgpl.txt file in the root directory or http://www.gnu.org/licenses/lgpl-2.1.html
- */
-
-/*
- * Hibernate, Relational Persistence for Idiomatic Java
- *
  * Copyright (c) 2012, Red Hat Inc. or third-party contributors as
  * indicated by the @author tags or express copyright attribution
  * statements applied by the authors.  All third-party contributions are
@@ -31,12 +24,8 @@
 package org.hibernate.build.gradle.testing.database;
 
 
-import java.io.File;
-import java.util.Objects;
-
-import org.gradle.api.Project;
-import org.gradle.api.artifacts.Configuration;
-
+import org.gradle.api.Project
+import org.gradle.api.artifacts.Configuration
 /**
  * Database profile as defined by a directory named {@code jdbc} containing JDBC drivers.
  *
@@ -48,11 +37,8 @@ public class JdbcDirectoryProfile extends AbstractDatabaseProfileImpl {
 
     public JdbcDirectoryProfile(File jdbcDirectory, Project project) {
         super( jdbcDirectory.getParentFile(), project );
-
-        assert jdbcDirectory.isDirectory();
-
         jdbcDependencies = prepareConfiguration( getName() );
-        project.getDependencies().add( getName(), project.files( (Object[]) Objects.requireNonNull( jdbcDirectory.listFiles() ) ) );
+        project.dependencies.add(getName(), project.files(jdbcDirectory.listFiles()));
     }
 
     @Override
