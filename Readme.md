@@ -1,5 +1,9 @@
 ##Hibernate Matrix Testing
 
+
+**This plugin is considered deprecated.  Use `database-profile-plugin` plugin instead**
+
+
 ### Goal
 
 The idea of matrix testing is to allow testing in a varied set of configurations.  Specifically for Hibernate, this
