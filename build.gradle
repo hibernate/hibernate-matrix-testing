@@ -130,7 +130,7 @@ task sourcesJar(type: Jar, dependsOn: compileJava) {
     classifier = 'sources'
 }
 
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.6'
+wrapper {
+	gradleVersion = '4.8'
+	distributionType = Wrapper.DistributionType.ALL
 }
