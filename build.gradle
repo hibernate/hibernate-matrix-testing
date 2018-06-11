@@ -59,53 +59,45 @@ idea {
 	}
 }
 
+task sourcesJar(type: Jar) {
+	from sourceSets.main.allSource
+	classifier = 'sources'
+}
+
 publishing {
     publications {
         mavenJava(MavenPublication) {
             from components.java
+            artifact sourcesJar
 
-            artifact sourcesJar {
-                classifier "sources"
-            }
-
-            pom.withXml {
-                // append additional metadata
-                asNode().children().last() + {
-                    resolveStrategy = Closure.DELEGATE_FIRST
-                    name 'Matrix Testing Plugin for Gradle'
-                    description 'Gradle plugin for dynamic generation of Test tasks across a set of database profiles'
-                    url 'http://hibernate.org'
-                    organization {
-                        name 'Hibernate.org'
-                        url 'http://hibernate.org'
-                    }
-                    scm {
-                        url 'http://github.com/hibernate/hibernate-matrix-testing'
-                        connection 'scm:git:http://github.com/hibernate/hibernate-matrix-testing.git'
-                        developerConnection 'scm:git:git@github.com:hibernate/hibernate-matrix-testing.git'
-                    }
-                    licenses {
-                        license {
-                            name 'GNU Lesser General Public License'
-                            url 'http://www.gnu.org/licenses/lgpl-2.1.html'
-                            comments 'See discussion at http://hibernate.org/license for more details.'
-                            distribution 'repo'
-                        }
-                    }
-                    developers {
-                        developer {
-                            id 'hibernate-team'
-                            name 'The Hibernate Development Team'
-                            organization 'Hibernate.org'
-                            organizationUrl 'http://hibernate.org'
-                        }
+            pom {
+                name = 'Matrix Testing Plugin for Gradle'
+                description = 'Gradle plugin for dynamic generation of Test tasks across a set of database profile'
+                url = 'http://hibernate.org'
+                organization {
+                    name = 'Hibernate.org'
+                    url = 'http://hibernate.org'
+                }
+                scm {
+                    url = 'http://github.com/hibernate/hibernate-matrix-testing'
+                    connection = 'scm:git:http://github.com/hibernate/hibernate-matrix-testing.git'
+                    developerConnection = 'scm:git:git@github.com:hibernate/hibernate-matrix-testing.git'
+                }
+                licenses {
+                    license {
+                        name = 'GNU Lesser General Public License'
+                        url = 'http://www.gnu.org/licenses/lgpl-2.1.html'
+                        comments = 'See discussion at http://hibernate.org/license for more details.'
+                        distribution = 'repo'
                     }
                 }
-
-                // TEMPORARY : currently Gradle Publishing feature is exporting dependencies as 'runtime' scope,
-                //      rather than 'compile'; fix that.
-                asNode().dependencies[0].dependency.each {
-                    it.scope[0].value = 'compile'
+                developers {
+                    developer {
+                        id = 'hibernate-team'
+                        name = 'The Hibernate Development Team'
+                        organization = 'Hibernate.org'
+                        organizationUrl = 'http://hibernate.org'
+                    }
                 }
             }
         }
@@ -123,11 +115,6 @@ publishing {
             }
         }
     }
-}
-
-task sourcesJar(type: Jar, dependsOn: compileJava) {
-    from sourceSets.main.allSource
-    classifier = 'sources'
 }
 
 wrapper {
