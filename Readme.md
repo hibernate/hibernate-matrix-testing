@@ -1,4 +1,4 @@
-##Hibernate Matrix Testing
+# Hibernate Matrix Testing
 
 
 **This plugin is considered deprecated.  Use `database-profile-plugin` plugin instead**
@@ -7,8 +7,8 @@
 ### Goal
 
 The idea of matrix testing is to allow testing in a varied set of configurations.  Specifically for Hibernate, this
-correlates to running the same set of tests against against multiple databases.  This goal is achieved through
-2 Gradle plugins.
+correlates to running the same set of tests against multiple databases.
+This goal is achieved through 2 Gradle plugins.
 
 Note that the second plugin (org.hibernate.build.gradle.testing.matrix.MatrixTestingPlugin) applies the first
 one (org.hibernate.build.gradle.testing.database.DatabaseProfilePlugin) automatically, so generally scripts would
@@ -24,7 +24,7 @@ does this by performing a directory search.  Well actually it can perform up to 
 *    A custom profile directory, which can be named by setting a system property named _hibernate-matrix-databases_
 
 These directories are searched recursively.  We leverage this in Hibernate to allow the standard _databases_ directory
-to hold local profiles too.  That is achieved by a _.gitignore_ which says to ignore any directory named
+to hold local profiles too.  That is achieved by a _.gitignore_ file which says to ignore any directory named
 _local_ under the directory _databases_.  So one option to provide custom profiles is to drop them in there.  That
 has the benefit of not having to specify _hibernate-matrix-databases_
 Within these directories, the plugin looks for sub-directories which either:
