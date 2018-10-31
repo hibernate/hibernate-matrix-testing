@@ -5,5 +5,4 @@
  * See the lgpl.txt file in the root directory or <http://www.gnu.org/licenses/lgpl-2.1.html>.
  */
 
-//See https://docs.gradle.org/4.8/userguide/publishing_maven.html#publishing_maven:deferred_configuration
-enableFeaturePreview('STABLE_PUBLISHING')
+//Currently nothing needed here
