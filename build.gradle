@@ -51,7 +51,7 @@ dependencies {
 
 idea {
 	project {
-		languageLevel = '1.6'
+		languageLevel = '1.8'
 	}
 	module {
 		downloadSources = true
