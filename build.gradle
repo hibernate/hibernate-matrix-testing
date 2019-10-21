@@ -118,6 +118,5 @@ publishing {
 }
 
 wrapper {
-	gradleVersion = '5.0-rc-1'
 	distributionType = Wrapper.DistributionType.ALL
 }
