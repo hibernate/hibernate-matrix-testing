@@ -5,7 +5,7 @@ buildscript {
 
 		maven {
 			name 'jboss-nexus'
-			url "http://repository.jboss.org/nexus/content/groups/public/"
+			url "https://repository.jboss.org/nexus/content/groups/public/"
 		}
 		maven {
 			name "jboss-snapshots"
@@ -23,11 +23,11 @@ repositories {
 
 		maven {
 			name 'jboss-nexus'
-			url "http://repository.jboss.org/nexus/content/groups/public/"
+			url "https://repository.jboss.org/nexus/content/groups/public/"
 		}
 		maven {
 			name "jboss-snapshots"
-			url "http://snapshots.jboss.org/maven2/"
+			url "https://snapshots.jboss.org/maven2/"
 		}
 }
 
@@ -73,20 +73,20 @@ publishing {
             pom {
                 name = 'Matrix Testing Plugin for Gradle'
                 description = 'Gradle plugin for dynamic generation of Test tasks across a set of database profile'
-                url = 'http://hibernate.org'
+                url = 'https://hibernate.org'
                 organization {
                     name = 'Hibernate.org'
-                    url = 'http://hibernate.org'
+                    url = 'https://hibernate.org'
                 }
                 scm {
-                    url = 'http://github.com/hibernate/hibernate-matrix-testing'
-                    connection = 'scm:git:http://github.com/hibernate/hibernate-matrix-testing.git'
+                    url = 'https://github.com/hibernate/hibernate-matrix-testing'
+                    connection = 'scm:git:https://github.com/hibernate/hibernate-matrix-testing.git'
                     developerConnection = 'scm:git:git@github.com:hibernate/hibernate-matrix-testing.git'
                 }
                 licenses {
                     license {
                         name = 'GNU Lesser General Public License'
-                        url = 'http://www.gnu.org/licenses/lgpl-2.1.html'
+                        url = 'https://www.gnu.org/licenses/lgpl-2.1.html'
                         comments = 'See discussion at http://hibernate.org/license for more details.'
                         distribution = 'repo'
                     }
@@ -96,7 +96,7 @@ publishing {
                         id = 'hibernate-team'
                         name = 'The Hibernate Development Team'
                         organization = 'Hibernate.org'
-                        organizationUrl = 'http://hibernate.org'
+                        organizationUrl = 'https://hibernate.org'
                     }
                 }
             }
