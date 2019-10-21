@@ -143,7 +143,7 @@ public class MatrixTestingPlugin implements Plugin<Project> {
         final Test nodeTask = project.tasks.create( taskName, Test );
         nodeTask.description = "Runs the matrix against ${node.name}"
         nodeTask.classpath = node.databaseProfile.testingRuntimeConfiguration + testSourceSet.runtimeClasspath
-        nodeTask.testClassesDir = testSourceSet.output.classesDir
+        nodeTask.testClassesDirs = testSourceSet.output.classesDirs
         nodeTask.ignoreFailures = true
         nodeTask.workingDir = node.baseOutputDirectory
         nodeTask.reports.html.destination = new File(node.baseOutputDirectory, "reports")
