@@ -23,7 +23,7 @@ repositories {
 }
 
 group = 'org.hibernate.build.gradle'
-version = '3.0.0.Final'
+version = '3.0.1-SNAPSHOT'
 
 buildDir = "target"
 
