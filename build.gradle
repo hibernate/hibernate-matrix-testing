@@ -9,7 +9,7 @@ buildscript {
 		}
 		maven {
 			name "jboss-snapshots"
-			url "http://snapshots.jboss.org/maven2/"
+			url "https://snapshots.jboss.org/maven2/"
 		}
     }
     dependencies {
@@ -87,7 +87,7 @@ publishing {
                     license {
                         name = 'GNU Lesser General Public License'
                         url = 'https://www.gnu.org/licenses/lgpl-2.1.html'
-                        comments = 'See discussion at http://hibernate.org/license for more details.'
+                        comments = 'See discussion at https://hibernate.org/license for more details.'
                         distribution = 'repo'
                     }
                 }
