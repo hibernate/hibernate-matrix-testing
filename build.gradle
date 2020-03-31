@@ -3,7 +3,7 @@ plugins {
 	id 'java'
 	id 'groovy'
 	id 'maven-publish'
-	id 'org.hibernate.build.maven-repo-auth' version "3.0.0"
+	id 'org.hibernate.build.maven-repo-auth' version '3.0.2'
 	id 'idea'
 	id 'eclipse'
 }
