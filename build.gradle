@@ -1,61 +1,53 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        mavenLocal()
 
-plugins {
-	id 'groovy'
-	id 'java-gradle-plugin'
-	id "com.gradle.plugin-publish" version "0.11.0"
-	id 'idea'
-	id 'eclipse'
+		maven {
+			name 'jboss-nexus'
+			url "https://repository.jboss.org/nexus/content/groups/public/"
+		}
+		maven {
+			name "jboss-snapshots"
+			url "http://snapshots.jboss.org/maven2/"
+		}
+    }
+    dependencies {
+        classpath 'org.hibernate.build.gradle:gradle-maven-publish-auth:3.0.0'
+    }
 }
-
-// NOTE : plugins published to the Gradle Plugin Portal automatically
-// have `gradle.plugin.` prepended to their group name.
-//
-// It does allow that to be overridden, but then publishing requires
-// manual intervention from Gradle team to approve...  not worth the
-// hassle
-//
-// So long story short, not putting "gradle" in groupName here
-
-group = 'org.hibernate.build'
-version = '3.0.0'
-
-defaultTasks 'test'
 
 repositories {
-	mavenCentral()
+    mavenCentral()
+    mavenLocal()
+
+		maven {
+			name 'jboss-nexus'
+			url "https://repository.jboss.org/nexus/content/groups/public/"
+		}
+		maven {
+			name "jboss-snapshots"
+			url "https://snapshots.jboss.org/maven2/"
+		}
 }
+
+apply plugin: 'groovy'
+apply plugin: 'maven-publish'
+apply plugin: 'maven-publish-auth'
+
+apply plugin: 'idea'
+apply plugin: 'eclipse'
+
+group = 'org.hibernate.build.gradle'
+version = '3.0.0'
+
+buildDir = "target"
 
 dependencies {
     compile gradleApi()
     compile localGroovy()
     compile 'org.apache.ant:ant:1.8.2'
 }
-
-gradlePlugin {
-	plugins {
-		profilesPlugin {
-			id = 'org.hibernate.build.hibernate-matrix-testing'
-			implementationClass = 'org.hibernate.build.gradle.testing.matrix.MatrixTestingPlugin'
-		}
-	}
-}
-
-pluginBundle {
-	website = 'https://github.com/hibernate/hibernate-matrix-testing'
-	vcsUrl = 'https://github.com/hibernate/hibernate-matrix-testing'
-	tags = ['matrix','testing']
-
-	plugins {
-		profilesPlugin {
-			id = 'org.hibernate.build.hibernate-matrix-testing'
-			displayName = 'Gradle plugin for dynamic generation of Test tasks across a set of database profile'
-			description = 'Gradle plugin for dynamic generation of Test tasks across a set of database profile'
-		}
-	}
-}
-
-task compile
-tasks.compile.dependsOn tasks.compileJava, tasks.compileTestJava
 
 idea {
 	project {
@@ -67,13 +59,62 @@ idea {
 	}
 }
 
-task copyResourcesToIntelliJOutFolder(dependsOn: tasks.processTestResources) {
-	doLast {
-		copy {
-			from "$buildDir/resources/test"
-			into 'out/test/resources'
-		}
-	}
+task sourcesJar(type: Jar) {
+	from sourceSets.main.allSource
+	archiveClassifier.set( 'sources' )
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+
+            pom {
+                name = 'Matrix Testing Plugin for Gradle'
+                description = 'Gradle plugin for dynamic generation of Test tasks across a set of database profile'
+                url = 'https://hibernate.org'
+                organization {
+                    name = 'Hibernate.org'
+                    url = 'https://hibernate.org'
+                }
+                scm {
+                    url = 'https://github.com/hibernate/hibernate-matrix-testing'
+                    connection = 'scm:git:https://github.com/hibernate/hibernate-matrix-testing.git'
+                    developerConnection = 'scm:git:git@github.com:hibernate/hibernate-matrix-testing.git'
+                }
+                licenses {
+                    license {
+                        name = 'GNU Lesser General Public License'
+                        url = 'https://www.gnu.org/licenses/lgpl-2.1.html'
+                        comments = 'See discussion at http://hibernate.org/license for more details.'
+                        distribution = 'repo'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'hibernate-team'
+                        name = 'The Hibernate Development Team'
+                        organization = 'Hibernate.org'
+                        organizationUrl = 'https://hibernate.org'
+                    }
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            if ( version.endsWith( 'SNAPSHOT' ) ) {
+                name 'jboss-snapshots-repository'
+                url 'https://repository.jboss.org/nexus/content/repositories/snapshots'
+            }
+            else {
+                name 'jboss-releases-repository'
+                url 'https://repository.jboss.org/nexus/service/local/staging/deploy/maven2/'
+            }
+        }
+    }
 }
 
 wrapper {
