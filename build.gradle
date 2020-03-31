@@ -1,20 +1,11 @@
-buildscript {
-    repositories {
-        mavenCentral()
-        mavenLocal()
 
-		maven {
-			name 'jboss-nexus'
-			url "https://repository.jboss.org/nexus/content/groups/public/"
-		}
-		maven {
-			name "jboss-snapshots"
-			url "https://snapshots.jboss.org/maven2/"
-		}
-    }
-    dependencies {
-        classpath 'org.hibernate.build.gradle:gradle-maven-publish-auth:3.0.0'
-    }
+plugins {
+	id 'java'
+	id 'groovy'
+	id 'maven-publish'
+	id 'org.hibernate.build.maven-repo-auth' version "3.0.0"
+	id 'idea'
+	id 'eclipse'
 }
 
 repositories {
@@ -30,13 +21,6 @@ repositories {
 			url "https://snapshots.jboss.org/maven2/"
 		}
 }
-
-apply plugin: 'groovy'
-apply plugin: 'maven-publish'
-apply plugin: 'maven-publish-auth'
-
-apply plugin: 'idea'
-apply plugin: 'eclipse'
 
 group = 'org.hibernate.build.gradle'
 version = '3.0.0'
