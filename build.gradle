@@ -2,24 +2,18 @@
 plugins {
 	id 'java'
 	id 'groovy'
-	id 'maven-publish'
-	id 'org.hibernate.build.maven-repo-auth' version '3.0.2'
+
+    id 'java-gradle-plugin'
+
+    id 'com.gradle.plugin-publish' version '0.12.0'
+    id 'nu.studer.credentials' version '2.1'
+
 	id 'idea'
 	id 'eclipse'
 }
 
 repositories {
     mavenCentral()
-    mavenLocal()
-
-		maven {
-			name 'jboss-nexus'
-			url "https://repository.jboss.org/nexus/content/groups/public/"
-		}
-		maven {
-			name "jboss-snapshots"
-			url "https://snapshots.jboss.org/maven2/"
-		}
 }
 
 group = 'org.hibernate.build.gradle'
@@ -33,76 +27,76 @@ dependencies {
     compile 'org.apache.ant:ant:1.8.2'
 }
 
-idea {
-	project {
-		languageLevel = '1.8'
-	}
-	module {
-		downloadSources = true
-		downloadJavadoc = true
-	}
-}
-
-task sourcesJar(type: Jar) {
-	from sourceSets.main.allSource
-	archiveClassifier.set( 'sources' )
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-            artifact sourcesJar
-
-            pom {
-                name = 'Matrix Testing Plugin for Gradle'
-                description = 'Gradle plugin for dynamic generation of Test tasks across a set of database profile'
-                url = 'https://hibernate.org'
-                organization {
-                    name = 'Hibernate.org'
-                    url = 'https://hibernate.org'
-                }
-                scm {
-                    url = 'https://github.com/hibernate/hibernate-matrix-testing'
-                    connection = 'scm:git:https://github.com/hibernate/hibernate-matrix-testing.git'
-                    developerConnection = 'scm:git:git@github.com:hibernate/hibernate-matrix-testing.git'
-                }
-                licenses {
-                    license {
-                        name = 'GNU Lesser General Public License'
-                        url = 'https://www.gnu.org/licenses/lgpl-2.1.html'
-                        comments = 'See discussion at https://hibernate.org/license for more details.'
-                        distribution = 'repo'
-                    }
-                }
-                developers {
-                    developer {
-                        id = 'hibernate-team'
-                        name = 'The Hibernate Development Team'
-                        organization = 'Hibernate.org'
-                        organizationUrl = 'https://hibernate.org'
-                    }
-                }
-            }
+gradlePlugin {
+    plugins {
+        matrixPlugin {
+            id = 'org.hibernate.matrix'
+            implementationClass = 'org.hibernate.build.gradle.testing.matrix.MatrixTestingPlugin'
         }
     }
+}
 
-    repositories {
-        maven {
-            if ( version.endsWith( 'SNAPSHOT' ) ) {
-                name 'jboss-snapshots-repository'
-                url 'https://repository.jboss.org/nexus/content/repositories/snapshots'
-            }
-            else {
-                name 'jboss-releases-repository'
-                url 'https://repository.jboss.org/nexus/service/local/staging/deploy/maven2/'
-            }
+pluginBundle {
+    website = 'https://github.com/hibernate/hibernate-orm/tree/main/tooling/hibernate-gradle-plugin'
+    vcsUrl = 'https://github.com/hibernate/hibernate-orm/tree/main/tooling/hibernate-gradle-plugin'
+    tags = ['hibernate','orm','bytecode','enhancement','bytebuddy']
+
+    mavenCoordinates {
+        groupId = project.group.toString()
+        artifactId = project.name
+        version = project.version.toString()
+    }
+
+    plugins {
+        matrixPlugin {
+//            id = project.pluginId
+            displayName = 'Gradle plugin for running tests against multiple databases'
+            description = 'Gradle plugin for running tests against multiple databases'
+        }
+    }
+}
+
+idea {
+    project {
+        languageLevel = '1.8'
+    }
+    module {
+        downloadSources = true
+        downloadJavadoc = false
+    }
+}
+
+ext {
+    // look for command-line overrides of the username/password pairs for publishing
+    if ( project.hasProperty( 'hibernatePluginPortalUsername' ) ) {
+        if ( ! project.hasProperty( 'hibernatePluginPortalPassword' ) ) {
+            throw new GradleException( "Should specify both `hibernatePluginPortalUsername` and `hibernatePluginPortalPassword` as project properties" );
+        }
+        credentials.hibernatePluginPortalUsername = project.property( 'hibernatePluginPortalUsername' )
+        credentials.hibernatePluginPortalPassword = project.property( 'hibernatePluginPortalPassword' )
+    }
+    else if ( System.properties.hibernatePluginPortalUsername != null ) {
+        if ( System.properties.hibernatePluginPortalPassword == null ) {
+            throw new GradleException( "Should specify both `hibernatePluginPortalUsername` and `hibernatePluginPortalPassword` as system properties" );
+        }
+        credentials.hibernatePluginPortalUsername = System.properties.hibernatePluginPortalUsername
+        credentials.hibernatePluginPortalPassword = System.properties.hibernatePluginPortalPassword
+    }
+}
+
+gradle.taskGraph.whenReady { tg ->
+    if ( tg.hasTask( project.tasks.publishPlugins ) ) {
+        if ( credentials.hibernatePluginPortalUsername == null ) {
+            throw new RuntimeException( "`hibernatePluginPortalUsername` not found" )
+        }
+        if ( credentials.hibernatePluginPortalPassword == null ) {
+            throw new RuntimeException( "`hibernatePluginPortalPassword` not found" )
         }
     }
 }
 
 wrapper {
-	// To upgrade the version of gradle used in the wrapper, run:
-	//     ./gradlew wrapper --gradle-version NEW_VERSION
-	distributionType = Wrapper.DistributionType.ALL
+    // To upgrade the version of gradle used in the wrapper, run:
+    //     ./gradlew wrapper --gradle-version NEW_VERSION
+    distributionType = Wrapper.DistributionType.ALL
 }
