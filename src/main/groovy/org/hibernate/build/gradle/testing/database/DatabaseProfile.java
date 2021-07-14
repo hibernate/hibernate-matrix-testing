@@ -40,25 +40,26 @@ public interface DatabaseProfile {
 	 *
 	 * @return The profile name
 	 */
-	public String getName();
+	String getName();
 
 	/**
 	 * The base directory for the profile definition
 	 *
 	 * @return The profile directory for this profile.
 	 */
-	public File getDirectory();
+	File getDirectory();
 
 	/**
 	 * Read access to the Hibernate properties contributed by the definition of this profile.
 	 *
 	 * @return The contributed Hibernate properties
 	 */
-	public Map<String,Object> getHibernateProperties();
+	Map<String,Object> getHibernateProperties();
 
 	/**
 	 * Read access to the runtime configuration additions contributed by the definition
-	 * @return
+	 *
+	 * @return The Configuration (classpath) for running tests
 	 */
-	public Configuration getTestingRuntimeConfiguration();
+	Configuration getTestingRuntimeConfiguration();
 }

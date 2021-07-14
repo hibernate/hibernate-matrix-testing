@@ -5,7 +5,7 @@ plugins {
 
     id 'java-gradle-plugin'
 
-    id 'com.gradle.plugin-publish' version '0.12.0'
+    id 'com.gradle.plugin-publish' version '0.15.0'
     id 'nu.studer.credentials' version '2.1'
 
 	id 'idea'
@@ -16,8 +16,8 @@ repositories {
     mavenCentral()
 }
 
-group = 'org.hibernate.build.gradle'
-version = '3.0.1-SNAPSHOT'
+group = 'org.hibernate.build'
+version = '3.1.0'
 
 buildDir = "target"
 
@@ -29,15 +29,19 @@ dependencies {
 
 gradlePlugin {
     plugins {
-        matrixPlugin {
-            id = 'org.hibernate.matrix'
+        matrixProfilePlugin {
+            id = 'org.hibernate.matrix-profile'
+            implementationClass = 'org.hibernate.build.gradle.testing.database.DatabaseProfilePlugin'
+        }
+        matrixTestPlugin {
+            id = 'org.hibernate.matrix-test'
             implementationClass = 'org.hibernate.build.gradle.testing.matrix.MatrixTestingPlugin'
         }
     }
 }
 
 pluginBundle {
-    website = 'https://github.com/hibernate/hibernate-orm/tree/main/tooling/hibernate-gradle-plugin'
+    website = 'https://github.com/hibernate/hibernate-matrix-testing'
     vcsUrl = 'https://github.com/hibernate/hibernate-orm/tree/main/tooling/hibernate-gradle-plugin'
     tags = ['hibernate','orm','bytecode','enhancement','bytebuddy']
 
@@ -48,12 +52,19 @@ pluginBundle {
     }
 
     plugins {
-        matrixPlugin {
-//            id = project.pluginId
+        matrixTestPlugin {
             displayName = 'Gradle plugin for running tests against multiple databases'
             description = 'Gradle plugin for running tests against multiple databases'
         }
+        matrixProfilePlugin {
+            displayName = 'Gradle plugin for defining "database profiles" against which to run tests'
+            description = 'Gradle plugin for defining "database profiles" against which to run tests'
+        }
     }
+}
+
+if ( version.toString().endsWith( '-SNAPSHOT' ) ) {
+    tasks.publishPlugins.enabled = false
 }
 
 idea {
@@ -82,6 +93,9 @@ ext {
         credentials.hibernatePluginPortalUsername = System.properties.hibernatePluginPortalUsername
         credentials.hibernatePluginPortalPassword = System.properties.hibernatePluginPortalPassword
     }
+
+    project.setProperty( 'gradle.publish.key', credentials.hibernatePluginPortalUsername )
+    project.setProperty( 'gradle.publish.secret', credentials.hibernatePluginPortalPassword )
 }
 
 gradle.taskGraph.whenReady { tg ->

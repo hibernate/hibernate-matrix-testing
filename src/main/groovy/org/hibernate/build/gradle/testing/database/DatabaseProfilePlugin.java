@@ -67,14 +67,10 @@ public class DatabaseProfilePlugin implements Plugin<Project> {
     public void apply(Project project) {
         this.project = project;
 
-		final LinkedHashMap<String, DatabaseProfile> profileMap = new LinkedHashMap<String, DatabaseProfile>();
+		final LinkedHashMap<String, DatabaseProfile> profileMap = new LinkedHashMap<>();
 		processStandardProfiles( profileMap );
 		processCustomProfiles( profileMap );
-		this.profiles = new ArrayList<DatabaseProfile>();
-
-		for ( DatabaseProfile profile : profileMap.values() ) {
-			this.profiles.add( profile );
-		}
+		this.profiles = new ArrayList<>( profileMap.values() );
     }
 
 	private void processStandardProfiles(Map<String, DatabaseProfile> profileMap) {
