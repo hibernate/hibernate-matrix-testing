@@ -67,6 +67,9 @@ if ( version.toString().endsWith( '-SNAPSHOT' ) ) {
     tasks.publishPlugins.enabled = false
 }
 
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
 idea {
     project {
         languageLevel = '1.8'
